@@ -1,0 +1,33 @@
+{
+    "keyboard_name": "Mouse",
+    "manufacturer": "PloopyCo",
+    "url": "www.ploopy.co",
+    "maintainer": "zlice",
+    "usb": {
+        "vid": "0x5043",
+        "pid": "0x4D6F",
+        "device_version": "0.0.1"
+    },
+    "bootmagic": {
+        "matrix": [0, 4]
+    },
+    "processor": "RP2040",
+    "bootloader": "rp2040",
+    "matrix_pins": {
+        "direct": [
+            ["GP19", "GP28", "GP29", "GP16", "GP17", "GP18"]
+        ]
+    },
+    "layouts": {
+        "LAYOUT": {
+            "layout": [
+                {"x":0, "y":0, "h":2},
+                {"x":1, "y":0, "h":2},
+                {"x":2, "y":0.25, "h":1.25},
+                {"x":3, "y":0, "h":2},
+                {"x":4, "y":0, "h":2},
+                {"x":2, "y":1.5}
+            ]
+        }
+    }
+}
