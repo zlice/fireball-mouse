@@ -67,9 +67,11 @@ uint16_t cur_opt_debounce = OPT_DEBOUNCE;
 uint16_t scroll_hits = 0; // tracker for 40 25ms intervals = 1sec (1000ms)
 #define SCROLL_RAMP 40
 // finds a high/lo resting point and sets
-#define MAG_MARGIN 4 // +- 4 of max MAG_XX values before registering moves
-uint16_t MAG_UP = 800 ; // up - js magnet towards hand / stick forward to usb
-uint16_t MAG_DN = 700 ; // down - js magnet towards usb / stick back to hand
+#define MAG_MARGIN 5 // offset max MAG_XX values before registering both scrolls
+#define UP_MARGIN 10 // offset for registering up scrolls
+#define DN_MARGIN 18 // offset for registering down scrolls
+uint16_t MAG_UP = 888 ; // up - js magnet towards hand / stick forward to usb
+uint16_t MAG_DN = 888 ; // down - js magnet towards usb / stick back to hand
 
 // HALL SENSOR JOYSTICK JS
 void process_wheel(void) {
@@ -108,17 +110,18 @@ void process_wheel(void) {
     // dances around 740 +-, can hit 73X which is similar to 'down'
     // values vary per sensor, PCB and positioning
     // use this to figure out what works for you
-    //uprintf("mag read: %u   -    %u\n", val1, val2);
     //uprintf("mag read: %u\n", val2);
+    //uprintf("MAG_UP : %u\tMAG_DOWN : %u\n", MAG_UP, MAG_DN);
+    //uprintf("val1 : %u\tval2 : %u\n", val1, val2);
 
     lastScroll = timer_read();
     scroll_hits += 1;
 
     // dual sensors
-    if (val2 < MAG_UP - MAG_MARGIN) {
-      tap_code(KC_WH_D);
-    } else if (val1 > MAG_DN + MAG_MARGIN) {
+    if (val1 < MAG_UP) {
       tap_code(KC_WH_U);
+    } else if (val2 < MAG_DN) {
+      tap_code(KC_WH_D);
     } else {
       scroll_hits = 0;
     }
@@ -173,16 +176,16 @@ void keyboard_pre_init_kb(void) {
     setPinInput(HAL2);
     uint16_t hal = 0;
     // more reads (without touching) will find a better 'rest' point
-    for (int i = 0 ; i < 10 ; i++) {
-      hal = analogReadPin(HAL1);
-      if (hal > MAG_DN)
-        MAG_DN = hal;
+    for (int i = 0 ; i < 12 ; i++) {
       hal = analogReadPin(HAL2);
+      if (hal < MAG_DN)
+        MAG_DN = hal;
+      hal = analogReadPin(HAL1);
       if (hal < MAG_UP)
         MAG_UP = hal;
     }
-    MAG_DN += MAG_MARGIN * 2;
-    MAG_UP -= MAG_MARGIN * 2;
+    MAG_DN -= (DN_MARGIN + MAG_MARGIN);
+    MAG_UP -= (UP_MARGIN + MAG_MARGIN);
 
     /* Ground all output pins connected to ground. This provides additional
      * pathways to ground. If you're messing with this, know this: driving ANY
