@@ -22,8 +22,8 @@
 // hall sensor pins
 #define HAL1 GP26 // unused - only works well for single direction
 #define HAL2 GP27 // good for both directions
-#define MAG_HI 777 // up - js magnet towards hand / stick forward to usb
-#define MAG_LO 720 // down - js magnet towards usb / stick back to hand
+//#define MAG_UP 770 // up - js magnet towards hand / stick forward to usb
+//#define MAG_DN 770 // down - js magnet towards usb / stick back to hand
 
 #ifndef OPT_DEBOUNCE
 #    define OPT_DEBOUNCE 25       // (ms) Time between scroll events - orig 5
@@ -65,13 +65,18 @@ bool     debug_encoder     = false;
 uint16_t lastMidClick      = 0;      // Stops scrollwheel from being read if it was pressed
 uint16_t cur_opt_debounce = OPT_DEBOUNCE;
 uint16_t scroll_hits = 0; // tracker for 40 25ms intervals = 1sec (1000ms)
+#define SCROLL_RAMP 40
+// finds a high/lo resting point and sets
+#define MAG_MARGIN 4 // +- 4 of max MAG_XX values before registering moves
+uint16_t MAG_UP = 800 ; // up - js magnet towards hand / stick forward to usb
+uint16_t MAG_DN = 700 ; // down - js magnet towards usb / stick back to hand
 
 // HALL SENSOR JOYSTICK JS
 void process_wheel(void) {
 
     // proper qmk way to read is with mux
     // unused is an error in qmk
-    // uint16_t val1 = analogReadPin(HAL1);
+    uint16_t val1 = analogReadPin(HAL1);
     uint16_t val2 = analogReadPin(HAL2);
 
     // Don't scroll if the middle button is depressed.
@@ -90,7 +95,7 @@ void process_wheel(void) {
     //                   u16 overflows after hour of scrolling?
     // Limit the number of scrolls per unit time.
     cur_opt_debounce = OPT_DEBOUNCE;
-    if (scroll_hits > 40) {
+    if (scroll_hits > SCROLL_RAMP) {
       cur_opt_debounce = OPT_DEBOUNCE_FAST;
     }
 
@@ -103,18 +108,28 @@ void process_wheel(void) {
     // dances around 740 +-, can hit 73X which is similar to 'down'
     // values vary per sensor, PCB and positioning
     // use this to figure out what works for you
-//    uprintf("mag read: %u   -    %u\n", val1, val2);
+    //uprintf("mag read: %u   -    %u\n", val1, val2);
+    //uprintf("mag read: %u\n", val2);
 
     lastScroll = timer_read();
     scroll_hits += 1;
 
-    if (val2 < MAG_LO) {
+    // dual sensors
+    if (val2 < MAG_UP - MAG_MARGIN) {
       tap_code(KC_WH_D);
-    } else if (val2 > MAG_HI) {
+    } else if (val1 > MAG_DN + MAG_MARGIN) {
       tap_code(KC_WH_U);
     } else {
       scroll_hits = 0;
     }
+    // single sensor
+    // if (val2 < MAG_DN) {
+    //   tap_code(KC_WH_D);
+    // } else if (val2 > MAG_UP) {
+    //   tap_code(KC_WH_U);
+    // } else {
+    //   scroll_hits = 0;
+    // }
 }
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
@@ -154,8 +169,20 @@ void keyboard_pre_init_kb(void) {
     // debug_mouse   = true;
     // debug_encoder = true;
 
-    // setPinInput(HAL1);
+    setPinInput(HAL1);
     setPinInput(HAL2);
+    uint16_t hal = 0;
+    // more reads (without touching) will find a better 'rest' point
+    for (int i = 0 ; i < 10 ; i++) {
+      hal = analogReadPin(HAL1);
+      if (hal > MAG_DN)
+        MAG_DN = hal;
+      hal = analogReadPin(HAL2);
+      if (hal < MAG_UP)
+        MAG_UP = hal;
+    }
+    MAG_DN += MAG_MARGIN * 2;
+    MAG_UP -= MAG_MARGIN * 2;
 
     /* Ground all output pins connected to ground. This provides additional
      * pathways to ground. If you're messing with this, know this: driving ANY

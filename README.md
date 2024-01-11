@@ -43,10 +43,10 @@ May need tweaking for every printer and filament combo. The bambu project in the
 
  - bottom screw mount supports can be punctured and twisted out
  - bottom left thumb overhang needs sanding after support is removed
- - left/right click contacts can be sanded, washed, and electrical taped. But click contact can be very finicky (especially with 'huano yellow dot' switches, I eventually gave up and opted to use the raw plastic). This was the hardest part of 'feel' to get right.
+ - left/right click contacts can be sanded, washed, and electrical taped. But click contact can be very finicky (especially with 'huano yellow dot' switches, I eventually gave up and opted to use the raw plastic). This was the hardest part of 'feel' to get right. Contacts may need moved left/right if you use a 12mm omron style switch vs a kailh square switch.
  - side (forward/backward) clicks support can be a bit messy if you wait for it to cool. Removing supports while warm was easier for me in general but should be done here since the part is small and is less likely to warp or deform while still warm.
  - fire button, side clicks and joystick mount are press fit: print smaller test fits before or you'll have to rig some electrical tape for loose fits, or sand (or break) parts on tight fits.
- - magnetic joystick will need tape over the USB connector to make sure it doesn't contact it. The hall sensor routes **under** the joystick faces **away** from the joystick magnets. Technically the wrong direction, but it works great for me. (TODO: camera won't focus that close =/)
+ - magnetic joystick will need tape over the USB connector to make sure it doesn't contact it. The hall sensor routes **under** the joystick faces **away** from the joystick magnets. Technically the wrong direction, but it works great for me. Another sensor can be placed on the side but is best suited in a similar location on the other side of the joystick. See [ideal locations here](./img/halls.png). The code for the joystick/scroll-stick has been updated to read 10 times and use a +- margin to auto-adjust values for scroll up+down. Logic or values may need changed if the magnets are in different polarity or the sensors are positioned differently (reading different ranges).
  - magnets may need test fits depending on print tolerances. Mine were snug and required no glue to stay in place which is perfect. Make sure they are centered and in the right positions (north/south).
  - if your joystick is squeaky or doesn't move smoothly, sanding the inside with the screw's threads may help. Sanding the edges of the bottom or where parts may rub can help also.
  - tightening PCB mounts should be done evenly and just enough to work with everything else
@@ -107,9 +107,11 @@ You will have to trim the 4-pin USB header or desolder for it to fit properly in
 
 # Improvements
 
-- Sensor bottom mount is slightly off for me and could be moved/centered better.
-- The extra sensor mount square groove in the middle is probably useless and could be removed.
+- PMW3360 bottom mount is slightly off for me and could be moved/centered better.
+- The extra PMW3360 mount square groove in the middle is probably useless and could be removed.
 - Thumb groove could be extended up a bit at a 45 degree angle. Your thumb can touch the 'back' button since you are not always flat. I don't accidentally press it and it is not that noticeable or bothersome, but it could be something to look at.
+- Hall sensor placement could be better. If the PCB is redone, it may be better to put 2 sensors on the side or directly in front+behind the joystick if possible.
+- Fire/flip/enter and joystick may feel better if a bit taller. Left/Right clicks ended up being higher than expected.
 - Left/Right click feel is more precise to adjust than I expected. Part of this is due to the light weight top and back mounting. The double prong mounts that commercial mice use help prevent rocking side-to-side which created a very uneven, unpredictable and bad click feel. If I try again it may be ideal to mount clicks directly under where they connect somehow, or at least separately.
 
 # Shoutouts
