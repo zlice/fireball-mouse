@@ -113,6 +113,7 @@ You will have to trim the 4-pin USB header or desolder for it to fit properly in
 - Hall sensor placement could be better. If the PCB is redone, it may be better to put 2 sensors on the side or directly in front+behind the joystick if possible.
 - Fire/flip/enter and joystick may feel better if a bit taller. Left/Right clicks ended up being higher than expected.
 - Left/Right click feel is more precise to adjust than I expected. Part of this is due to the light weight top and back mounting. The double prong mounts that commercial mice use help prevent rocking side-to-side which created a very uneven, unpredictable and bad click feel. If I try again it may be ideal to mount clicks directly under where they connect somehow, or at least separately.
+- Add capacitors to hall sensor outputs to smooth out noise
 
 # Shoutouts
 
